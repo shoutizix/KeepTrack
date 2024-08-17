@@ -72,25 +72,21 @@ interface BookCardProps {
   book: Book;
 }
 
-function retrieveImageURL(book: Book): string {
-  const imageSize = "M";
+export function retrieveImageURL(book: Book, imageSize: string = "M"): string {
+  // const imageSize = "M";
   return book.imageId
     ? `https://covers.openlibrary.org/b/id/${book.imageId}-${imageSize}.jpg`
     : "";
 }
 
 const BookCard: React.FC<BookCardProps> = ({ book }) => {
-  console.log(book);
-  const imageURL = retrieveImageURL(book);
+  // console.log(book);
+  const imageURL = retrieveImageURL(book, "M");
 
   return (
     <div style={styles.card}>
       {imageURL && (
-        <img
-          src={retrieveImageURL(book)}
-          alt={book.title}
-          style={styles.coverImage}
-        />
+        <img src={imageURL} alt={book.title} style={styles.coverImage} />
       )}
       <div style={styles.cardContent}>
         <h3 style={styles.title}>{book.title}</h3>
@@ -120,7 +116,7 @@ const styles = {
   },
   coverImage: {
     width: "100%",
-    height: "auto",
+    height: "250px",
   },
   cardContent: {
     padding: "16px",
