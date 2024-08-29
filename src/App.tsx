@@ -1,47 +1,42 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import AsyncSelect from "react-select/async";
 import "./App.css";
-import Books, {
+import {
   fetchBooks,
   languages,
   Book,
   retrieveImageURL,
 } from "./components/Books";
+import { components, OptionProps, StylesConfig } from "react-select";
 import BookList from "./components/BookList";
-import { components } from "react-select";
 
-interface BookOption {
-  value: string;
-  label: string;
-  image: string;
-}
+type CustomOptionProps = OptionProps<Book, false>;
 
-const CustomOption = (props: any) => {
+const CustomOption: React.FC<CustomOptionProps> = (props) => {
+  const image = retrieveImageURL(props.data, "S");
   return (
     <components.Option {...props}>
       <div style={{ display: "flex", alignItems: "center" }}>
-        {props.data.image && (
+        {image && (
           <img
-            src={props.data.image}
-            alt={props.data.label}
+            src={image}
+            alt={props.data.title}
             style={{ width: 70, height: 85, marginRight: 10 }}
           />
         )}
-        <div>{props.data.label}</div>
+        <div>{props.data.title}</div>
       </div>
     </components.Option>
   );
 };
 
-const customStyles = {
-  menu: (provided: any) => ({
+const customStyles: StylesConfig<Book, false> = {
+  menu: (provided) => ({
     ...provided,
     backgroundColor: "white",
     color: "black",
   }),
-  option: (provided: any, state: any) => ({
+  option: (provided, state) => ({
     ...provided,
     color: state.isSelected ? "white" : "black", // texte noir normalement, blanc si sélectionné
     backgroundColor: state.isSelected ? "#007bff" : "white", // bleu pour les options sélectionnées
@@ -49,7 +44,7 @@ const customStyles = {
       backgroundColor: state.isSelected ? "#0056b3" : "#f1f1f1", // fond plus foncé au survol
     },
   }),
-  singleValue: (provided: any) => ({
+  singleValue: (provided) => ({
     ...provided,
     color: "black", // texte de la valeur sélectionnée en noir
   }),
@@ -57,22 +52,30 @@ const customStyles = {
 
 function App() {
   const [books, setBooks] = useState<Book[]>([]);
-  const [options, setOptions] = useState<BookOption[]>([]);
+  // const [options, setOptions] = useState<Book[]>([]);
 
-  const fBooks = (searchWords: string) =>
-    fetchBooks(searchWords, languages.FR).then((books) =>
-      books.map((book) => ({
-        value: book.title,
-        label: `${book.title}, by ${book.author}`,
-        image: retrieveImageURL(book, "S"),
-      }))
-    );
+  const fBooks = (searchWords: string) => fetchBooks(searchWords, languages.FR);
+  // .then((books) =>
+  //     books.map((book) => ({
+  //       value: book.title,
+  //       label: `${book.title}, by ${book.author}`,
+  //       image: retrieveImageURL(book, "S"),
+  //     }))
+  // );
 
   const loadOptions = (
     inputValue: string,
-    callback: (options: BookOption[]) => void
+    callback: (options: Book[]) => void
   ) => {
     fBooks(inputValue).then((options) => callback(options));
+  };
+
+  const handleSelect = (selectedOption: Book | null) => {
+    if (selectedOption) {
+      setBooks((prevSelectedBooks) => [
+        ...new Set([...prevSelectedBooks, selectedOption]),
+      ]);
+    }
   };
 
   return (
@@ -80,13 +83,20 @@ function App() {
       <h1>Keep Track</h1>
       <AsyncSelect
         loadOptions={loadOptions}
+        onChange={handleSelect}
         components={{ Option: CustomOption }}
         styles={customStyles}
         placeholder="Rechercher un livre"
         isClearable
       />
       {/* //loadOptions={fBooks} /> */}
-      <div>{books && <BookList books={books} />}</div>
+      <div style={{ marginTop: "20px" }}>
+        <h2>Ma liste de livres</h2>
+        <BookList key={0} books={books} />
+        {/* {books.map((book, index) => (
+          <BookCard key={index} book={book} />
+        ))} */}
+      </div>
     </>
   );
 }

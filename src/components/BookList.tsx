@@ -1,6 +1,11 @@
-import BookCard from "./Books";
+import BookCard from "./BookCard";
+import { Book } from "./Books";
 
-const BookList: React.FC = ({ books }) => {
+interface BookListProp {
+  books: Book[];
+}
+
+const BookList: React.FC<BookListProp> = ({ books }) => {
   return (
     <div style={styles.grid}>
       {books.map((book) => (
@@ -13,7 +18,7 @@ const BookList: React.FC = ({ books }) => {
 export default BookList;
 
 // Styles inline pour la grille
-const styles = {
+const styles: { grid: React.CSSProperties } = {
   grid: {
     display: "flex",
     flexWrap: "wrap",

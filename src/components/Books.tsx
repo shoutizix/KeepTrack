@@ -1,9 +1,7 @@
-import React from "react";
-
 const apiUrl: string = "https://openlibrary.org/search.json?q=";
-const userAgent =
-  "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36";
-const userAgent2 = "KeepTrack/0.1 (shoutizix@gmail.com)";
+// const userAgent =
+//   "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.114 Safari/537.36";
+//const userAgent2 = "KeepTrack/0.1";
 const headers: Headers = new Headers({
   //"User-Agent": userAgent,
   Accept: "application/json",
@@ -18,7 +16,6 @@ export enum languages {
   EN = "eng",
 }
 
-// Définir une interface pour les données de livres
 export interface Book {
   id: string;
   title: string;
@@ -27,7 +24,19 @@ export interface Book {
   publicationYear: Date;
 }
 
-function parseBooks(rawData): Array<Book> {
+type rawBook = {
+  key: string;
+  title: string;
+  author_name: string;
+  cover_i: string;
+  first_publish_year: Date;
+};
+
+type rawBooks = {
+  docs: rawBook[];
+};
+
+function parseBooks(rawData: rawBooks): Array<Book> {
   //console.log(`rawData : ${JSON.stringify(rawData)}`);
   const books: Book[] = [];
 
@@ -43,7 +52,6 @@ function parseBooks(rawData): Array<Book> {
   return books;
 }
 
-// Fonction pour fetcher les données de livres
 export async function fetchBooks(
   title: string,
   lang: languages
@@ -58,8 +66,7 @@ export async function fetchBooks(
     }
 
     // Convertir la réponse en JSON
-    const data: Book[] = await response.json();
-
+    const data: rawBooks = await response.json();
     // Retourner les données
     return parseBooks(data);
   } catch (error) {
@@ -68,78 +75,9 @@ export async function fetchBooks(
   }
 }
 
-interface BookCardProps {
-  book: Book;
-}
-
 export function retrieveImageURL(book: Book, imageSize: string = "M"): string {
   // const imageSize = "M";
   return book.imageId
     ? `https://covers.openlibrary.org/b/id/${book.imageId}-${imageSize}.jpg`
     : "";
 }
-
-const BookCard: React.FC<BookCardProps> = ({ book }) => {
-  // console.log(book);
-  const imageURL = retrieveImageURL(book, "M");
-
-  return (
-    <div style={styles.card}>
-      {imageURL && (
-        <img src={imageURL} alt={book.title} style={styles.coverImage} />
-      )}
-      <div style={styles.cardContent}>
-        <h3 style={styles.title}>{book.title}</h3>
-        <p style={styles.author}>by {book.author}</p>
-        {book.publicationYear && (
-          <p style={styles.year}>
-            Published in {book.publicationYear.toString()}
-          </p>
-        )}
-        {/* <p style={styles.description}>{book.description}</p> */}
-      </div>
-    </div>
-  );
-};
-
-export default BookCard;
-
-// Styles inline
-const styles = {
-  card: {
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    overflow: "hidden",
-    width: "300px",
-    margin: "10px",
-    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-  },
-  coverImage: {
-    width: "100%",
-    height: "250px",
-  },
-  cardContent: {
-    padding: "16px",
-  },
-  title: {
-    fontSize: "18px",
-    fontWeight: "bold",
-    margin: "0 0 8px 0",
-  },
-  author: {
-    fontSize: "16px",
-    margin: "0 0 8px 0",
-  },
-  year: {
-    fontSize: "14px",
-    color: "#888",
-    margin: "0 0 8px 0",
-  },
-  description: {
-    fontSize: "14px",
-    color: "#555",
-  },
-};
-
-// Exemple d'utilisation de la fonction
-// export default fetchBooks;
