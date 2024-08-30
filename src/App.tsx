@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AsyncSelect from "react-select/async";
 import "./App.css";
 import {
@@ -9,6 +9,8 @@ import {
 } from "./components/Books";
 import { components, OptionProps, StylesConfig } from "react-select";
 import BookList from "./components/BookList";
+
+const LOCAL_STORAGE_KEY = "bookList";
 
 type CustomOptionProps = OptionProps<Book, false>;
 
@@ -62,6 +64,27 @@ function App() {
   //       image: retrieveImageURL(book, "S"),
   //     }))
   // );
+  // Retrieve books from local storage on component mount
+  useEffect(() => {
+    const savedBooks = localStorage.getItem(LOCAL_STORAGE_KEY);
+    if (savedBooks) {
+      setBooks(JSON.parse(savedBooks));
+    }
+  }, []);
+
+  // Save books to local storage whenever the list is updated
+  useEffect(() => {
+    if (books.length > 0) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(books));
+    }
+  }, [books]);
+
+  // Function to add a book to the list (and update local storage)
+  const addBook = (newBook: Book) => {
+    setBooks((prevSelectedBooks) => [
+      ...new Set([...prevSelectedBooks, newBook]),
+    ]);
+  };
 
   const loadOptions = (
     inputValue: string,
@@ -72,9 +95,7 @@ function App() {
 
   const handleSelect = (selectedOption: Book | null) => {
     if (selectedOption) {
-      setBooks((prevSelectedBooks) => [
-        ...new Set([...prevSelectedBooks, selectedOption]),
-      ]);
+      addBook(selectedOption);
     }
   };
 
