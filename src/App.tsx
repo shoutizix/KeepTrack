@@ -54,16 +54,12 @@ const customStyles: StylesConfig<Book, false> = {
 
 function App() {
   const [books, setBooks] = useState<Book[]>([]);
-  // const [options, setOptions] = useState<Book[]>([]);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showError, setShowError] = useState<boolean>(false);
+  const [isBookRemoved, setIsBookRemoved] = useState<boolean>(false);
 
   const fBooks = (searchWords: string) => fetchBooks(searchWords, languages.FR);
-  // .then((books) =>
-  //     books.map((book) => ({
-  //       value: book.title,
-  //       label: `${book.title}, by ${book.author}`,
-  //       image: retrieveImageURL(book, "S"),
-  //     }))
-  // );
+
   // Retrieve books from local storage on component mount
   useEffect(() => {
     const savedBooks = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -74,16 +70,38 @@ function App() {
 
   // Save books to local storage whenever the list is updated
   useEffect(() => {
-    if (books.length > 0) {
+    if (isBookRemoved) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(books));
+      setIsBookRemoved(false);
+    } else if (books.length > 0) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(books));
     }
   }, [books]);
 
   // Function to add a book to the list (and update local storage)
   const addBook = (newBook: Book) => {
-    setBooks((prevSelectedBooks) => [
-      ...new Set([...prevSelectedBooks, newBook]),
-    ]);
+    if (books.some((book) => book.id === newBook.id)) {
+      setErrorMessage("This book is already in your list!");
+      setShowError(true);
+      setTimeout(() => setErrorMessage(null), 2000);
+      return;
+    }
+    setBooks((prevSelectedBooks) => [...prevSelectedBooks, newBook]);
+  };
+
+  // Function to remove a book to the list (and update local storage)
+  const removeBook = (bookIdToRemove: Book["id"]) => {
+    if (!books.some((book) => book.id === bookIdToRemove)) {
+      setErrorMessage("This book is not already in your list!");
+      setShowError(true);
+      setTimeout(() => setErrorMessage(null), 2000);
+      return;
+    }
+
+    setBooks((prevSelectedBooks) =>
+      prevSelectedBooks.filter((book) => book.id !== bookIdToRemove)
+    );
+    setIsBookRemoved(true);
   };
 
   const loadOptions = (
@@ -113,13 +131,63 @@ function App() {
       {/* //loadOptions={fBooks} /> */}
       <div style={{ marginTop: "20px" }}>
         <h2>Ma liste de livres</h2>
-        <BookList key={0} books={books} />
-        {/* {books.map((book, index) => (
+        <div style={styles.container}>
+          {errorMessage && (
+            <div style={showError ? styles.errorVisible : styles.errorHidden}>
+              {errorMessage}
+            </div>
+          )}
+          <BookList key={0} books={books} removeBook={removeBook} />
+          {/* {books.map((book, index) => (
           <BookCard key={index} book={book} />
         ))} */}
+        </div>
       </div>
     </>
   );
 }
 
 export default App;
+
+// Styles
+const styles = {
+  container: {
+    position: "relative" as const,
+    paddingBottom: "20px",
+  },
+  grid: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    padding: "20px",
+  },
+  errorVisible: {
+    position: "fixed" as const,
+    bottom: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "red",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    zIndex: 1000,
+    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+    transition: "opacity 1.5s ease-in-out",
+    opacity: 1, // Fully visible
+  },
+  errorHidden: {
+    position: "fixed" as const,
+    bottom: "10px",
+    left: "50%",
+    transform: "translateX(-50%)",
+    backgroundColor: "red",
+    color: "white",
+    padding: "10px 20px",
+    borderRadius: "5px",
+    zIndex: 1000,
+    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+    transition: "opacity 0.5s ease-in-out",
+    opacity: 0, // Fully hidden
+    pointerEvents: "none", // Prevent interaction while hidden
+  },
+};

@@ -3,13 +3,14 @@ import { Book } from "./Books";
 
 interface BookListProp {
   books: Book[];
+  removeBook: (id: Book["id"]) => void;
 }
 
-const BookList: React.FC<BookListProp> = ({ books }) => {
+const BookList: React.FC<BookListProp> = ({ books, removeBook }) => {
   return (
     <div style={styles.grid}>
       {books.map((book) => (
-        <BookCard key={book.id} book={book} />
+        <BookCard key={book.id} book={book} removeBook={removeBook} />
       ))}
     </div>
   );

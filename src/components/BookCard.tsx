@@ -1,15 +1,27 @@
 import React from "react";
 import { Book, retrieveImageURL } from "./Books";
+import crossIcon from "../assets/cross.png";
 
 interface BookCardProps {
   book: Book;
+  removeBook: (id: Book["id"]) => void;
 }
 
-const BookCard: React.FC<BookCardProps> = ({ book }) => {
+const BookCard: React.FC<BookCardProps> = ({ book, removeBook }) => {
   const imageURL = retrieveImageURL(book, "M");
+
+  const handleRemove = () => {
+    removeBook(book.id);
+  };
 
   return (
     <div style={styles.card}>
+      <img
+        src={crossIcon}
+        alt="Remove book"
+        style={styles.crossIcon}
+        onClick={handleRemove}
+      />
       {imageURL && (
         <img src={imageURL} alt={book.title} style={styles.coverImage} />
       )}
@@ -32,6 +44,7 @@ export default BookCard;
 // Styles inline
 const styles = {
   card: {
+    position: "relative" as const,
     border: "1px solid #ddd",
     borderRadius: "8px",
     overflow: "hidden",
@@ -63,5 +76,13 @@ const styles = {
   description: {
     fontSize: "14px",
     color: "#555",
+  },
+  crossIcon: {
+    position: "absolute" as const,
+    top: "10px",
+    right: "10px",
+    width: "40px",
+    height: "40px",
+    cursor: "pointer" as const,
   },
 };
