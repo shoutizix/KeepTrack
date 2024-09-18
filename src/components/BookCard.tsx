@@ -1,6 +1,6 @@
 import React from "react";
 import { Book, retrieveImageURL } from "./Books";
-import crossIcon from "../assets/cross.png";
+import crossIcon from "../assets/cross.svg";
 
 interface BookCardProps {
   book: Book;
@@ -81,8 +81,8 @@ const styles = {
     position: "absolute" as const,
     top: "10px",
     right: "10px",
-    width: "40px",
-    height: "40px",
+    width: "20px",
+    height: "20px",
     cursor: "pointer" as const,
   },
 };

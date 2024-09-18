@@ -9,6 +9,7 @@ import {
 } from "./components/Books";
 import { components, OptionProps, StylesConfig } from "react-select";
 import BookList from "./components/BookList";
+import addIcon from "./assets/add.svg";
 
 const LOCAL_STORAGE_KEY = "bookList";
 
@@ -57,6 +58,7 @@ function App() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showError, setShowError] = useState<boolean>(false);
   const [isBookRemoved, setIsBookRemoved] = useState<boolean>(false);
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
 
   const fBooks = (searchWords: string) => fetchBooks(searchWords, languages.FR);
 
@@ -87,6 +89,7 @@ function App() {
       return;
     }
     setBooks((prevSelectedBooks) => [...prevSelectedBooks, newBook]);
+    setShowSearchBar(false);
   };
 
   // Function to remove a book to the list (and update local storage)
@@ -117,18 +120,23 @@ function App() {
     }
   };
 
+  const handleAdd = () => {
+    setShowSearchBar(true);
+  };
+
   return (
     <>
       <h1>Keep Track</h1>
-      <AsyncSelect
-        loadOptions={loadOptions}
-        onChange={handleSelect}
-        components={{ Option: CustomOption }}
-        styles={customStyles}
-        placeholder="Rechercher un livre"
-        isClearable
-      />
-      {/* //loadOptions={fBooks} /> */}
+      {showSearchBar && (
+        <AsyncSelect
+          loadOptions={loadOptions}
+          onChange={handleSelect}
+          components={{ Option: CustomOption }}
+          styles={customStyles}
+          placeholder="Rechercher un livre"
+          isClearable
+        />
+      )}
       <div style={{ marginTop: "20px" }}>
         <h2>Ma liste de livres</h2>
         <div style={styles.container}>
@@ -138,9 +146,14 @@ function App() {
             </div>
           )}
           <BookList key={0} books={books} removeBook={removeBook} />
-          {/* {books.map((book, index) => (
-          <BookCard key={index} book={book} />
-        ))} */}
+        </div>
+        <div style={styles.buttonContainer}>
+          <img
+            src={addIcon}
+            alt="Add book"
+            style={styles.floatingButton}
+            onClick={handleAdd}
+          />
         </div>
       </div>
     </>
@@ -189,5 +202,16 @@ const styles = {
     transition: "opacity 0.5s ease-in-out",
     opacity: 0, // Fully hidden
     pointerEvents: "none", // Prevent interaction while hidden
+  },
+  buttonContainer: {
+    position: "fixed" as const, // Sticks the button to a fixed place
+    bottom: "20px",
+    right: "20px",
+  },
+  floatingButton: {
+    padding: "15px",
+    width: "80px",
+    height: "80px",
+    cursor: "pointer" as const,
   },
 };
