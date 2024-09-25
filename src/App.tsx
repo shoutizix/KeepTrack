@@ -66,7 +66,9 @@ function App() {
   useEffect(() => {
     const savedBooks = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (savedBooks) {
-      setBooks(JSON.parse(savedBooks));
+      // USED TO DEBUG
+      setBooks([]);
+      // setBooks(JSON.parse(savedBooks));
     }
   }, []);
 
@@ -88,14 +90,12 @@ function App() {
         await response.json().then((data) => {
           const fetchedBooks: Array<Book> = data;
           console.log(fetchedBooks);
-          //setBooks(fetchedBooks);
+          setBooks(fetchedBooks);
         });
       } catch (error) {
         console.error("Error fetching the scraped books:", error);
       }
     };
-
-    console.log("TEST");
     fetchBooks();
   }, []);
 

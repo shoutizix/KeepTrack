@@ -1,7 +1,5 @@
-const express = require("express");
 const axios = require("axios");
 const cheerio = require("cheerio");
-const cors = require("cors");
 
 async function scrap(req, res) {
   try {
@@ -10,7 +8,7 @@ async function scrap(req, res) {
     const url = "https://www.folio-lesite.fr/catalogue";
     const pagesToScrape = ["?page=0%2C0"];
     const pagesDiscovered = ["?page=0%2C0"];
-    const limit = 50;
+    const limit = 10;
     let currentPageNumber = 1;
 
     const books = [];
@@ -50,7 +48,7 @@ async function scrap(req, res) {
 
           // if the page discovered is new
           if (paginationURL && !pagesDiscovered.includes(paginationURL)) {
-            pagesDiscovered.push(url + paginationURL);
+            pagesDiscovered.push(paginationURL);
 
             // if the page discovered should be scraped
             if (!pagesToScrape.includes(paginationURL)) {
@@ -60,11 +58,11 @@ async function scrap(req, res) {
         }
       });
 
-      currentPageNumber++;
       console.log(currentPageNumber);
+      currentPageNumber++;
     }
     // Send the result to the front end logic
-    console.log(books);
+    // console.log(books);
     res.json(books);
   } catch (error) {
     console.error(error);
