@@ -80,6 +80,25 @@ function App() {
     }
   }, [books]);
 
+  // Fetch the data from the backend
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/scrape-books");
+        await response.json().then((data) => {
+          const fetchedBooks: Array<Book> = data;
+          console.log(fetchedBooks);
+          //setBooks(fetchedBooks);
+        });
+      } catch (error) {
+        console.error("Error fetching the scraped books:", error);
+      }
+    };
+
+    console.log("TEST");
+    fetchBooks();
+  }, []);
+
   // Function to add a book to the list (and update local storage)
   const addBook = (newBook: Book) => {
     if (books.some((book) => book.id === newBook.id)) {

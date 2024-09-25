@@ -77,6 +77,7 @@ export async function fetchBooks(
 
 export function retrieveImageURL(book: Book, imageSize: string = "M"): string {
   // const imageSize = "M";
+  // return book.imageId;
   return book.imageId
     ? `https://covers.openlibrary.org/b/id/${book.imageId}-${imageSize}.jpg`
     : "";
