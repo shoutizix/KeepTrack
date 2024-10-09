@@ -10,6 +10,7 @@ import {
 import { components, OptionProps, StylesConfig } from "react-select";
 import BookList from "./components/BookList";
 import addIcon from "./assets/add.svg";
+import settingsIcon from "./assets/settings.svg";
 
 const LOCAL_STORAGE_KEY = "bookList";
 
@@ -143,9 +144,21 @@ function App() {
     setShowSearchBar(true);
   };
 
+  const handleSettings = () => {
+    alert("Settings");
+  };
+
   return (
     <>
       <h1>Keep Track</h1>
+      <div style={styles.buttonSettingsContainer}>
+        <img
+          src={settingsIcon}
+          alt="Settings"
+          style={styles.floatingSettingsButton}
+          onClick={handleSettings}
+        />
+      </div>
       {showSearchBar && (
         <AsyncSelect
           loadOptions={loadOptions}
@@ -166,11 +179,11 @@ function App() {
           )}
           <BookList key={0} books={books} removeBook={removeBook} />
         </div>
-        <div style={styles.buttonContainer}>
+        <div style={styles.buttonAddContainer}>
           <img
             src={addIcon}
             alt="Add book"
-            style={styles.floatingButton}
+            style={styles.floatingAddButton}
             onClick={handleAdd}
           />
         </div>
@@ -222,12 +235,23 @@ const styles = {
     opacity: 0, // Fully hidden
     pointerEvents: "none", // Prevent interaction while hidden
   },
-  buttonContainer: {
+  buttonAddContainer: {
     position: "fixed" as const, // Sticks the button to a fixed place
     bottom: "20px",
     right: "20px",
   },
-  floatingButton: {
+  floatingAddButton: {
+    padding: "15px",
+    width: "80px",
+    height: "80px",
+    cursor: "pointer" as const,
+  },
+  buttonSettingsContainer: {
+    position: "fixed" as const, // Sticks the button to a fixed place
+    top: "20px",
+    right: "20px",
+  },
+  floatingSettingsButton: {
     padding: "15px",
     width: "80px",
     height: "80px",
