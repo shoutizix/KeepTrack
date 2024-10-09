@@ -9,8 +9,8 @@ import {
 } from "./components/Books";
 import { components, OptionProps, StylesConfig } from "react-select";
 import BookList from "./components/BookList";
-import addIcon from "./assets/add.svg";
-import settingsIcon from "./assets/settings.svg";
+import AddButton from "./components/AddButton";
+import Settings from "./components/Settings";
 
 const LOCAL_STORAGE_KEY = "bookList";
 
@@ -144,21 +144,10 @@ function App() {
     setShowSearchBar(true);
   };
 
-  const handleSettings = () => {
-    alert("Settings");
-  };
-
   return (
     <>
       <h1>Keep Track</h1>
-      <div style={styles.buttonSettingsContainer}>
-        <img
-          src={settingsIcon}
-          alt="Settings"
-          style={styles.floatingSettingsButton}
-          onClick={handleSettings}
-        />
-      </div>
+      <Settings />
       {showSearchBar && (
         <AsyncSelect
           loadOptions={loadOptions}
@@ -179,14 +168,7 @@ function App() {
           )}
           <BookList key={0} books={books} removeBook={removeBook} />
         </div>
-        <div style={styles.buttonAddContainer}>
-          <img
-            src={addIcon}
-            alt="Add book"
-            style={styles.floatingAddButton}
-            onClick={handleAdd}
-          />
-        </div>
+        <AddButton onClick={handleAdd} />
       </div>
     </>
   );
@@ -234,27 +216,5 @@ const styles = {
     transition: "opacity 0.5s ease-in-out",
     opacity: 0, // Fully hidden
     pointerEvents: "none", // Prevent interaction while hidden
-  },
-  buttonAddContainer: {
-    position: "fixed" as const, // Sticks the button to a fixed place
-    bottom: "20px",
-    right: "20px",
-  },
-  floatingAddButton: {
-    padding: "15px",
-    width: "80px",
-    height: "80px",
-    cursor: "pointer" as const,
-  },
-  buttonSettingsContainer: {
-    position: "fixed" as const, // Sticks the button to a fixed place
-    top: "20px",
-    right: "20px",
-  },
-  floatingSettingsButton: {
-    padding: "15px",
-    width: "80px",
-    height: "80px",
-    cursor: "pointer" as const,
   },
 };
